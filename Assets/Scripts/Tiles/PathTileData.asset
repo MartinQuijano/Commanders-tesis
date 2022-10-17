@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8b122ddd269f594aa4e2ef33badcf50, type: 3}
+  m_Name: PathTileData
+  m_EditorClassIdentifier: 
+  tiles:
+  - {fileID: 11400000, guid: abf4e039c0f708e4b975754c4931de51, type: 2}
+  - {fileID: 11400000, guid: f1b117a32225e164c80001cae583d3c3, type: 2}
+  - {fileID: 11400000, guid: 1d613905c0cfe56488416e1f08801bc1, type: 2}
+  - {fileID: 11400000, guid: b66ca756beb9c6b4d831c595e6f78139, type: 2}
+  - {fileID: 11400000, guid: 2b8961c6caae6e541be9e4ffb1ad1b53, type: 2}
+  - {fileID: 11400000, guid: b418f41f46803274fb3f5efc818fe04e, type: 2}
+  - {fileID: 11400000, guid: 459162e5640195c4288b0f1643567d36, type: 2}
+  - {fileID: 11400000, guid: 279052b344fef9846b22d6b20332805e, type: 2}
+  - {fileID: 11400000, guid: a3fae04eca892d34ab188248ed28af04, type: 2}
+  - {fileID: 11400000, guid: 39c54123ee0dd86469134d491df42479, type: 2}
+  - {fileID: 11400000, guid: df9ad92ac0aafc14f8264da65acbdaf8, type: 2}
+  - {fileID: 11400000, guid: 8fc52a0000c6a3447875a3a7a254ba3d, type: 2}
+  terrainCost: 1
+  isTerrainBlocked: 0

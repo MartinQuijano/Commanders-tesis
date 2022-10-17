@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8b122ddd269f594aa4e2ef33badcf50, type: 3}
+  m_Name: WoodTileData
+  m_EditorClassIdentifier: 
+  tiles:
+  - {fileID: 11400000, guid: 37a3584ea0790f84d949e3db6a8fd16c, type: 2}
+  - {fileID: 11400000, guid: 83f5f0af1bdd4c34586da8bd5408878b, type: 2}
+  - {fileID: 11400000, guid: cf4b9aeb987636449b8b8b2f199a42cf, type: 2}
+  - {fileID: 11400000, guid: 80f75aba495d3684995e0377616a80c4, type: 2}
+  terrainCost: 3
+  isTerrainBlocked: 0
