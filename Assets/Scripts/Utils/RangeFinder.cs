@@ -204,7 +204,7 @@ public class RangeFinder
         return inRangeTiles;
     }
 
-    public List<OverlayTile> GetTilesInMovementRangeMCTS(OverlayTile startingTile, int range, List<CharacterInfo> myTeam, List<CharacterInfo> enemyTeam)
+    public List<OverlayTile> GetTilesInMovementRangeMCTS(OverlayTile startingTile, int range, List<Unit> myTeam, List<Unit> enemyTeam)
     {
         var inRangeTiles = new List<OverlayTile>();
 
@@ -258,7 +258,61 @@ public class RangeFinder
         return inRangeTiles;
     }
 
-    private bool ThereIsCharacterFromOppositeTeamOnTileMCTS(OverlayTile tile, List<CharacterInfo> enemyTeam)
+    public List<OverlayTile> GetTilesInMovementRangeMCTS2(OverlayTile startingTile, int range, FullGameState fullGameState)
+    {
+        var inRangeTiles = new List<OverlayTile>();
+
+        inRangeTiles.Add(startingTile);
+
+        var tileForPreviousStep = new List<OverlayTile>();
+        tileForPreviousStep.Add(startingTile);
+        while (tileForPreviousStep.Count > 0)
+        {
+            var surroundingTiles = new List<OverlayTile>();
+
+            foreach (var item in tileForPreviousStep)
+            {
+                foreach (var tile in fullGameState.GetNeighbourTiles(item, new List<OverlayTile>()))
+                {
+                    if (!tile.tileData.isTerrainBlocked)
+                    {
+                        if (ThereIsCharacterFromOppositeTeamOnTileMCTS2(tile)) { }
+                        else
+                        {
+                            if (tile.costToMoveToThisTile != 0)
+                            {
+                                if (tile.tileData.terrainCost + item.costToMoveToThisTile < tile.costToMoveToThisTile)
+                                    tile.costToMoveToThisTile = tile.tileData.terrainCost + item.costToMoveToThisTile;
+                            }
+                            else
+                                tile.costToMoveToThisTile = tile.tileData.terrainCost + item.costToMoveToThisTile;
+
+                            if (range > tile.costToMoveToThisTile && !inRangeTiles.Contains(tile))
+                            {
+                                surroundingTiles.Add(tile);
+                            }
+                            else if (range == tile.costToMoveToThisTile && !inRangeTiles.Contains(tile) && !ThereIsCharacterOnTileMCTS2(tile))
+                            {
+                                surroundingTiles.Add(tile);
+                            }
+                        }
+                    }
+                }
+            }
+
+            inRangeTiles.AddRange(surroundingTiles);
+            tileForPreviousStep = surroundingTiles.Distinct().ToList();
+        }
+        foreach (OverlayTile tile in fullGameState.map.Values)
+        {
+            tile.costToMoveToThisTile = 0;
+        }
+
+        inRangeTiles = inRangeTiles.Distinct().ToList();
+        return inRangeTiles;
+    }
+
+    private bool ThereIsCharacterFromOppositeTeamOnTileMCTS(OverlayTile tile, List<Unit> enemyTeam)
     {
         bool thereIsCharacter = false;
         int index = 0;
@@ -273,7 +327,12 @@ public class RangeFinder
         return thereIsCharacter;
     }
 
-    private bool ThereIsCharacterOnTileMCTS(OverlayTile tile, List<CharacterInfo> myTeam, List<CharacterInfo> enemyTeam)
+    private bool ThereIsCharacterFromOppositeTeamOnTileMCTS2(OverlayTile tile)
+    {
+        return (tile.characterOnTile != null && !tile.characterOnTile.isFromCurrentPlayingTeam);
+    }
+
+    private bool ThereIsCharacterOnTileMCTS(OverlayTile tile, List<Unit> myTeam, List<Unit> enemyTeam)
     {
         bool thereIsCharacter = false;
 
@@ -296,5 +355,10 @@ public class RangeFinder
         }
 
         return thereIsCharacter;
+    }
+
+    private bool ThereIsCharacterOnTileMCTS2(OverlayTile tile)
+    {
+        return tile.characterOnTile != null;
     }
 }

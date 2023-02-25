@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Archer : CharacterInfo
+public class Archer : Unit
 {
     public override void MoveAlongPath(List<OverlayTile> path)
     {
@@ -34,7 +34,7 @@ public class Archer : CharacterInfo
         currentMovingPath = path;
     }
 
-    public override void MoveAlongPathForIATest(List<OverlayTile> path)
+    public override void MoveAlongPathForAI(List<OverlayTile> path)
     {
         if (path.Count > 0)
         {
@@ -66,7 +66,7 @@ public class Archer : CharacterInfo
         attacked = true;
         currentMovingPathForIA = path;
     }
-    public override void MoveAlongPathForIATest2(List<OverlayTile> path, IAMCTSController iAMCTSController)
+    public override void MoveAlongPathForAIMCTS(List<OverlayTile> path, MCTSAI iAMCTSController)
     {
         this.iAMCTSController = iAMCTSController;
         if (path.Count > 0)
@@ -101,8 +101,9 @@ public class Archer : CharacterInfo
         attacked = true;
         currentMovingPathForIA = path;
     }
-    public override void AttackEnemy(CharacterInfo enemy)
+    public override void AttackEnemy(Unit enemy)
     {
+        Instantiate(attackAnimationPrefab, enemy.transform.position, Quaternion.identity);
         enemy.TakeDamage(damage);
         ChangeSpriteToUnactive();
         GridHUDDisplayer.Instance.ClearAttackTilesInRangeDisplayed();
@@ -115,7 +116,7 @@ public class Archer : CharacterInfo
         GridHUDDisplayer.Instance.DisplayMovementAndAttackRangeTiles(standingOnTile, 0, attackRange);
     }
 
-    public override Action SelectRandomActionMCTS(CharacterInfo originalCharacter, List<CharacterInfo> myTeam, List<CharacterInfo> enemyTeam)
+    public override Action SelectRandomActionMCTS(Unit originalCharacter, List<Unit> myTeam, List<Unit> enemyTeam, int movePercentage, Dictionary<Unit, int> dicOfDmgTakenByUnits)
     {
         Action actionSelected = null;
 
@@ -123,37 +124,22 @@ public class Archer : CharacterInfo
         {
             int randomNumber = Random.Range(0, 100);
 
-            if (randomNumber < 20)
+            if (randomNumber < movePercentage)
             {
                 actionSelected = GenerateMovementAction(originalCharacter, myTeam, enemyTeam);
             }
             else
             {
-                List<OverlayTile> allPosibleTilesToAttackTo = rangeFinder.GetTilesInAttackRange(standingOnTile, attackRange);
-                List<OverlayTile> tilesWhereThereAreEnemiesToAttack = new List<OverlayTile>();
-
-                foreach (OverlayTile tile in allPosibleTilesToAttackTo)
-                {
-                    if (ThereIsEnemyCharacterOnTileMCTS(tile, enemyTeam))
-                        tilesWhereThereAreEnemiesToAttack.Add(tile);
-                }
-                if (tilesWhereThereAreEnemiesToAttack.Count > 0)
-                {
-                    int randomIndexForPosition = Random.Range(0, tilesWhereThereAreEnemiesToAttack.Count);
-                    OverlayTile tileToAttackTo = tilesWhereThereAreEnemiesToAttack[randomIndexForPosition];
-
-                    actionSelected = new Attack(this, originalCharacter, standingOnTile.grid2DLocation, tileToAttackTo.grid2DLocation);
-                    attacked = true;
-                    moved = true;
-                }
-                else actionSelected = GenerateMovementAction(originalCharacter, myTeam, enemyTeam);
+                actionSelected = GenerateAttackAction(originalCharacter, enemyTeam, dicOfDmgTakenByUnits);
+                if (actionSelected == null)
+                    actionSelected = GenerateMovementAction(originalCharacter, myTeam, enemyTeam);
             }
         }
 
         return actionSelected;
     }
 
-    private Action GenerateMovementAction(CharacterInfo originalCharacter, List<CharacterInfo> myTeam, List<CharacterInfo> enemyTeam)
+    private Action GenerateMovementAction(Unit originalCharacter, List<Unit> myTeam, List<Unit> enemyTeam)
     {
         Action actionSelected = null;
 
@@ -180,5 +166,85 @@ public class Archer : CharacterInfo
         attacked = true;
 
         return actionSelected;
+    }
+
+    private Action GenerateMovementAction2(Unit originalCharacter, FullGameState fullGameState)
+    {
+        Action actionSelected = null;
+
+        List<OverlayTile> allPosibleTilesToMoveTo = rangeFinder.GetTilesInMovementRangeMCTS2(standingOnTile, movementRange, fullGameState);
+        List<OverlayTile> positionsBlockedByOwnUnits = new List<OverlayTile>();
+
+        int randomIndexForPosition = Random.Range(0, allPosibleTilesToMoveTo.Count);
+        OverlayTile tileToMoveTo = allPosibleTilesToMoveTo[randomIndexForPosition];
+
+        actionSelected = new Movement(this, originalCharacter, standingOnTile.grid2DLocation, tileToMoveTo.grid2DLocation);
+        moved = true;
+        attacked = true;
+
+        return actionSelected;
+    }
+
+    public override List<Action> SelectMoveAndAttackOrRandomActionMCTS(Unit originalCharacter, List<Unit> myTeam, List<Unit> enemyTeam, Dictionary<Unit, int> dicOfDmgTakenByUnits)
+    {
+        List<Action> actionsSelected = new List<Action>();
+        Action action = GenerateAttackAction(originalCharacter, enemyTeam, dicOfDmgTakenByUnits);
+        if (action != null)
+            actionsSelected.Add(action);
+
+        return actionsSelected;
+    }
+
+    public override string GetTypeOfUnit()
+    {
+        return "Archer";
+    }
+
+    public override void SimulateMovementNAG()
+    {
+        moved = true;
+        attacked = true;
+    }
+
+    public override int GetAmountOfUnitsExclusivelyInMoveAndAttackRange(List<Unit> myTeam, List<Unit> enemyTeam)
+    {
+        return 0;
+    }
+
+    public override int GetProximityScoreToMyTeam(List<Unit> myTeam)
+    {
+        int score = 0;
+        int distanceToUnit;
+
+        foreach (Unit unit in myTeam)
+        {
+            if (standingOnTile != unit.standingOnTile)
+            {
+                distanceToUnit = GetManhattanDistance(standingOnTile, unit.standingOnTile);
+                switch (distanceToUnit)
+                {
+                    case 1:
+                        score = score + 0;
+                        break;
+                    case 2:
+                        score = score + 0;
+                        break;
+                    case 3:
+                        break;
+                    case 4:
+                        break;
+                    default:
+                        score = score - 1;
+                        break;
+                }
+            }
+        }
+
+        return score;
+    }
+
+    public override double GetScoreModifier()
+    {
+        return 1.5f;
     }
 }

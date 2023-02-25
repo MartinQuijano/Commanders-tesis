@@ -85,7 +85,7 @@ public class GridHUDDisplayer : MonoBehaviour
         }
     }
 
-    public void DisplayArrowPath(CharacterInfo selectedCharacter, OverlayTile hoveredOverlayTile)
+    public void DisplayArrowPath(Unit selectedCharacter, OverlayTile hoveredOverlayTile)
     {
         if (selectedCharacter != null && hoveredOverlayTile.characterOnTile == null && inRangeOfMovementTiles.Contains(hoveredOverlayTile))
         {

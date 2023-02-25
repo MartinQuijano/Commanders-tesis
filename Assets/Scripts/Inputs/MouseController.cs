@@ -6,12 +6,11 @@ using System.Linq;
 
 public class MouseController : MonoBehaviour
 {
-    public CharacterInfo selectedCharacter;
-    private CharacterInfo clickedCharacter;
-    private CharacterInfo pressedCharacter;
+    public Unit selectedCharacter;
+    private Unit clickedCharacter;
+    private Unit pressedCharacter;
 
     private OverlayTile hoveredOverlayTile;
-    private OverlayTile lastSelectedTile;
 
     private RaycastHit2D[] focusedTileHit;
 
@@ -23,14 +22,12 @@ public class MouseController : MonoBehaviour
     public Text unitMovement;
     public Text unitAttack;
 
-    public TurnManager turnManager;
-
     void Start()
     {
         gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0);
     }
 
-    void Update()
+    public void Operate()
     {
         focusedTileHit = GetFocusedOnTile();
         if (focusedTileHit != null)
@@ -44,17 +41,14 @@ public class MouseController : MonoBehaviour
             if (focusedTileHit.Length == 2)
                 SetHoveredUnitDetails();
 
-            if (turnManager.teamPlaying == 1 || turnManager.ia == null)
+            if (selectedCharacter != null && selectedCharacter.isMoving) { }
+            else
             {
-                if (selectedCharacter != null && selectedCharacter.isMoving) { }
-                else
-                {
-                    LeftButton();
+                LeftButton();
 
-                    GridHUDDisplayer.Instance.DisplayArrowPath(selectedCharacter, hoveredOverlayTile);
+                GridHUDDisplayer.Instance.DisplayArrowPath(selectedCharacter, hoveredOverlayTile);
 
-                    RightButton();
-                }
+                RightButton();
             }
         }
         else
@@ -70,7 +64,7 @@ public class MouseController : MonoBehaviour
 
             if (focusedTileHit.Length == 2)
             {
-                clickedCharacter = focusedTileHit[1].collider.gameObject.GetComponent<CharacterInfo>();
+                clickedCharacter = focusedTileHit[1].collider.gameObject.GetComponent<Unit>();
 
                 if (clickedCharacter.isFromCurrentPlayingTeam)
                 {
@@ -78,7 +72,6 @@ public class MouseController : MonoBehaviour
                         selectedCharacter.OnDeselected();
                     selectedCharacter = clickedCharacter;
                     selectedCharacter.OnSelected();
-                    List<Action> asd = selectedCharacter.GenerateAllPosibleActions();
                 }
                 else
                 {
@@ -108,7 +101,7 @@ public class MouseController : MonoBehaviour
             }
             if (focusedTileHit.Length == 2)
             {
-                clickedCharacter = focusedTileHit[1].collider.gameObject.GetComponent<CharacterInfo>();
+                clickedCharacter = focusedTileHit[1].collider.gameObject.GetComponent<Unit>();
                 if (clickedCharacter != null && !clickedCharacter.isFromCurrentPlayingTeam)
                 {
 
@@ -153,7 +146,7 @@ public class MouseController : MonoBehaviour
 
     public void SetHoveredUnitDetails()
     {
-        CharacterInfo character = focusedTileHit[1].collider.gameObject.GetComponent<CharacterInfo>();
+        Unit character = focusedTileHit[1].collider.gameObject.GetComponent<Unit>();
         if (character != null)
         {
             unitImage.sprite = character.sprites[0];

@@ -6,57 +6,63 @@ using UnityEngine.Tilemaps;
 
 public class TurnManager : MonoBehaviour
 {
-    public TeamManager teamOne;
-    public TeamManager teamTwo;
-
     public Tilemap blueBorderTilemap;
     public Tilemap redBorderTilemap;
 
-    public int teamPlaying;
-    public IAMCTSController ia;
+    // public int teamPlaying;
+    public MCTSAI ia;
     public Button endTurnButton;
+    private int currentPlayerIndex;
+    public Player[] players;
+
+    public bool gameEnded;
+
+    public int turnsPlayed;
 
     void Awake()
     {
-        teamPlaying = 1;
-        GameObject IAGO = GameObject.Find("IA");
-        if (IAGO != null)
-            ia = IAGO.GetComponent<IAMCTSController>();
-        else ia = null;
+
+        currentPlayerIndex = 0;
+        turnsPlayed = 0;
+
     }
 
     public void EndTurn()
     {
-        GridHUDDisplayer.Instance.ClearMovementTilesInRangeDisplayed();
-        GridHUDDisplayer.Instance.ClearAttackTilesInRangeDisplayed();
-        GridHUDDisplayer.Instance.ClearPath();
-
-        teamOne.MakeAllCharacterActive();
-        teamTwo.MakeAllCharacterActive();
-
-        if (teamPlaying == 1)
+        if (!gameEnded)
         {
-            teamTwo.RefreshCharacters();
-            teamPlaying = 2;
-            if (ia != null)
-            {
-                ia.OnTurnStart();
-                endTurnButton.gameObject.SetActive(false);
-            }
+            turnsPlayed++;
+            blueBorderTilemap.gameObject.SetActive(!blueBorderTilemap.gameObject.activeSelf);
+            redBorderTilemap.gameObject.SetActive(!redBorderTilemap.gameObject.activeSelf);
+
+            GridHUDDisplayer.Instance.ClearMovementTilesInRangeDisplayed();
+            GridHUDDisplayer.Instance.ClearAttackTilesInRangeDisplayed();
+            GridHUDDisplayer.Instance.ClearPath();
+
+            StartCoroutine(WaitAndEndTurn());
+
         }
+    }
+
+    IEnumerator WaitAndEndTurn()
+    {
+        yield return new WaitForSeconds(0.01f);
+        players[currentPlayerIndex].OnTurnEnd();
+        currentPlayerIndex = GetIndexOfNextPlayer();
+        if (!players[currentPlayerIndex].CanUseButtons())
+            endTurnButton.gameObject.SetActive(false);
         else
-        {
-            teamOne.RefreshCharacters();
-            teamPlaying = 1;
-            if (ia != null)
-            {
-                endTurnButton.gameObject.SetActive(true);
-            }
-        }
-        teamOne.ChangeIsFromCurrentPlayingTeamFromCharacters();
-        teamTwo.ChangeIsFromCurrentPlayingTeamFromCharacters();
+            endTurnButton.gameObject.SetActive(true);
+        players[currentPlayerIndex].OnTurnStart();
+    }
 
-        blueBorderTilemap.gameObject.SetActive(!blueBorderTilemap.gameObject.activeSelf);
-        redBorderTilemap.gameObject.SetActive(!redBorderTilemap.gameObject.activeSelf);
+    public int GetIndexOfNextPlayer()
+    {
+        int index = currentPlayerIndex + 1;
+        if (index == players.Length)
+        {
+            index = 0;
+        }
+        return index;
     }
 }

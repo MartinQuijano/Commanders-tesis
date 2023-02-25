@@ -6,11 +6,10 @@ public class TreeNode<T>
 {
     private T nodeData;
     private ArrayList childNodes;
-
     private TreeNode<T> parent;
-
     private double reward;
     private int visits;
+    private int remainingAmountOfExpansionPosible;
 
     public TreeNode(T nodeData)
     {
@@ -19,6 +18,7 @@ public class TreeNode<T>
         parent = null;
         reward = 0;
         visits = 0;
+        remainingAmountOfExpansionPosible = 150;
     }
 
     public T Data
@@ -50,6 +50,13 @@ public class TreeNode<T>
         this.childNodes.Add(newNode);
         newNode.parent = this;
         return newNode;
+    }
+
+    public int RemainingAmountOfExpansionPosible { get { return remainingAmountOfExpansionPosible; } }
+
+    public void ReduceAmountOfExpansionPosible()
+    {
+        remainingAmountOfExpansionPosible--;
     }
 
     public override string ToString()

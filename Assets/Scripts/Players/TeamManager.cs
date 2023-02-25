@@ -4,27 +4,27 @@ using UnityEngine;
 
 public class TeamManager : MonoBehaviour
 {
-    public List<CharacterInfo> characters;
+    public List<Unit> characters;
 
     void Awake()
     {
-        characters = new List<CharacterInfo>();
+        characters = new List<Unit>();
     }
 
-    public void AddCharacter(CharacterInfo character)
+    public void AddCharacter(Unit character)
     {
         characters.Add(character);
         character.SetMyTeam(this);
     }
 
-    public void RemoveCharacter(CharacterInfo character)
+    public void RemoveCharacter(Unit character)
     {
         characters.Remove(character);
     }
 
     public void RefreshCharacters()
     {
-        foreach (CharacterInfo character in characters)
+        foreach (Unit character in characters)
         {
             character.moved = false;
             character.attacked = false;
@@ -35,7 +35,7 @@ public class TeamManager : MonoBehaviour
 
     public void MakeAllCharacterUnactive()
     {
-        foreach (CharacterInfo character in characters)
+        foreach (Unit character in characters)
         {
             character.ChangeSpriteToUnactive();
         }
@@ -43,7 +43,7 @@ public class TeamManager : MonoBehaviour
 
     public void MakeAllCharacterActive()
     {
-        foreach (CharacterInfo character in characters)
+        foreach (Unit character in characters)
         {
             character.ChangeSpriteToActive();
         }
@@ -51,9 +51,21 @@ public class TeamManager : MonoBehaviour
 
     public void ChangeIsFromCurrentPlayingTeamFromCharacters()
     {
-        foreach (CharacterInfo character in characters)
+        foreach (Unit character in characters)
         {
             character.SwapIsFromCurrentPlayingTeam();
         }
+    }
+
+    public int GetTeamHealth()
+    {
+        int teamHealth = 0;
+
+        foreach (Unit unit in characters)
+        {
+            teamHealth += unit.currentHealth;
+        }
+
+        return teamHealth;
     }
 }

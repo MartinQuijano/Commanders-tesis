@@ -8,68 +8,65 @@ public class GameManager : MonoBehaviour
     public TeamManager teamOne;
     public TeamManager teamTwo;
 
-    public GameObject characterFighterTeamOnePrefab;
-    public GameObject characterTankTeamOnePrefab;
-    public GameObject characterArcherTeamOnePrefab;
-
-    public GameObject characterFighterTeamTwoPrefab;
-    public GameObject characterTankTeamTwoPrefab;
-    public GameObject characterArcherTeamTwoPrefab;
-
     public TurnManager turnManager;
     public GameObject mouseController;
 
     public GameObject gameOverScreen;
     public Text gameOverText;
 
+    public Player playerOne;
+    public Player playerTwo;
+
+    public LogManager logManager;
+    public UnitFactory unitFactory;
+
     void Start()
     {
         //team 1
-        CharacterInfo characterInfo = Instantiate(characterFighterTeamOnePrefab).GetComponent<CharacterInfo>();
-        characterInfo.PositionCharacterOnTile(MapManager.Instance.map[new Vector2Int(-5, 0)]);
-        characterInfo.isFromCurrentPlayingTeam = true;
-        MapManager.Instance.map[new Vector2Int(-5, 0)].characterOnTile = characterInfo;
-        teamOne.AddCharacter(characterInfo);
+        teamOne.AddCharacter(unitFactory.GetUnitTeamOne("Fighter", new Vector2Int(-1, -2)));
+        teamOne.AddCharacter(unitFactory.GetUnitTeamOne("Fighter", new Vector2Int(-2, -1)));
+        teamOne.AddCharacter(unitFactory.GetUnitTeamOne("Tank", new Vector2Int(-1, 0)));
+        teamOne.AddCharacter(unitFactory.GetUnitTeamOne("Archer", new Vector2Int(-3, 0)));
 
-        characterInfo = Instantiate(characterTankTeamOnePrefab).GetComponent<CharacterInfo>();
-        characterInfo.PositionCharacterOnTile(MapManager.Instance.map[new Vector2Int(-4, -1)]);
-        characterInfo.isFromCurrentPlayingTeam = true;
-        MapManager.Instance.map[new Vector2Int(-4, -1)].characterOnTile = characterInfo;
-        teamOne.AddCharacter(characterInfo);
-
-        characterInfo = Instantiate(characterArcherTeamOnePrefab).GetComponent<CharacterInfo>();
-        characterInfo.PositionCharacterOnTile(MapManager.Instance.map[new Vector2Int(-5, -3)]);
-        characterInfo.isFromCurrentPlayingTeam = true;
-        MapManager.Instance.map[new Vector2Int(-5, -3)].characterOnTile = characterInfo;
-        teamOne.AddCharacter(characterInfo);
+        playerOne.SetTeam(teamOne);
 
         //team2
-        characterInfo = Instantiate(characterFighterTeamTwoPrefab).GetComponent<CharacterInfo>();
-        characterInfo.PositionCharacterOnTile(MapManager.Instance.map[new Vector2Int(1, 1)]);
-        characterInfo.isFromCurrentPlayingTeam = false;
-        characterInfo.GetComponent<SpriteRenderer>().flipX = true;
-        MapManager.Instance.map[new Vector2Int(1, 1)].characterOnTile = characterInfo;
-        teamTwo.AddCharacter(characterInfo);
+        //teamTwo.AddCharacter(unitFactory.GetUnitTeamTwo("Fighter", new Vector2Int(-1, -1)));
+        teamTwo.AddCharacter(unitFactory.GetUnitTeamTwo("Fighter", new Vector2Int(0, -2)));
+        teamTwo.AddCharacter(unitFactory.GetUnitTeamTwo("Tank", new Vector2Int(-3, -1)));
+        teamTwo.AddCharacter(unitFactory.GetUnitTeamTwo("Archer", new Vector2Int(1, -1)));
 
-        characterInfo = Instantiate(characterTankTeamTwoPrefab).GetComponent<CharacterInfo>();
-        characterInfo.PositionCharacterOnTile(MapManager.Instance.map[new Vector2Int(1, 0)]);
-        characterInfo.isFromCurrentPlayingTeam = false;
-        characterInfo.GetComponent<SpriteRenderer>().flipX = true;
-        MapManager.Instance.map[new Vector2Int(1, 0)].characterOnTile = characterInfo;
-        teamTwo.AddCharacter(characterInfo);
+        /*     teamOne.AddCharacter(unitFactory.GetUnitTeamOne("Fighter", new Vector2Int(-5, 0)));
+            teamOne.AddCharacter(unitFactory.GetUnitTeamOne("Tank", new Vector2Int(-4, -1)));
+            teamOne.AddCharacter(unitFactory.GetUnitTeamOne("Archer", new Vector2Int(-5, -2)));
 
-        characterInfo = Instantiate(characterArcherTeamTwoPrefab).GetComponent<CharacterInfo>();
-        characterInfo.PositionCharacterOnTile(MapManager.Instance.map[new Vector2Int(1, -3)]);
-        characterInfo.isFromCurrentPlayingTeam = false;
-        characterInfo.GetComponent<SpriteRenderer>().flipX = true;
-        MapManager.Instance.map[new Vector2Int(1, -3)].characterOnTile = characterInfo;
-        teamTwo.AddCharacter(characterInfo);
+            playerOne.SetTeam(teamOne);
+
+            //team2
+            teamTwo.AddCharacter(unitFactory.GetUnitTeamTwo("Fighter", new Vector2Int(2, 0)));
+            teamTwo.AddCharacter(unitFactory.GetUnitTeamTwo("Tank", new Vector2Int(1, -1)));
+            teamTwo.AddCharacter(unitFactory.GetUnitTeamTwo("Archer", new Vector2Int(2, -2))); */
+
+
+        playerTwo.SetTeam(teamTwo);
+
+        logManager.SaveTeamsToFile(teamOne.characters, teamTwo.characters);
+        turnManager.gameEnded = false;
     }
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            playerOne.OnTurnEnd();
+            playerOne.OnTurnStart();
+        }
+
         if (teamOne.characters.Count == 0)
         {
+            turnManager.gameEnded = true;
+            playerOne.SetCanTakeAction(false);
+            playerTwo.SetCanTakeAction(false);
             mouseController.SetActive(false);
             gameOverScreen.SetActive(true);
             if (turnManager.ia == null)
@@ -83,6 +80,9 @@ public class GameManager : MonoBehaviour
         }
         else if (teamTwo.characters.Count == 0)
         {
+            turnManager.gameEnded = true;
+            playerOne.SetCanTakeAction(false);
+            playerTwo.SetCanTakeAction(false);
             mouseController.SetActive(false);
             gameOverScreen.SetActive(true);
             if (turnManager.ia == null)

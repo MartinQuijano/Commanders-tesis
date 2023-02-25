@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7394691245662212703
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3908942764089773597}
+  - component: {fileID: 6567344654928573946}
+  - component: {fileID: 6248074404439946556}
+  - component: {fileID: 7679982556731528188}
+  m_Layer: 0
+  m_Name: PlayerOneDLMCTSNG
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3908942764089773597
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7394691245662212703}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.15736115, y: -0.33257353, z: -101.548256}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6567344654928573946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7394691245662212703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de25d920a5f9c9b4f9926aebe3a28194, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logManager: {fileID: 0}
+  turnManager: {fileID: 0}
+  canTakeAnAction: 0
+  actionsFinder: {fileID: 6248074404439946556}
+--- !u!114 &6248074404439946556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7394691245662212703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c74c39227c78ca640b70c0f76a5946c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxAmountOfChilds: 100
+  maxAmountOfTurnSimulated: 2
+  maxAmountOfBranchSimulated: 50
+  amountOfChildsComputed: 0
+  simulatedUnitsContainer: {fileID: 0}
+  clonedUnitsContainer: {fileID: 0}
+  IAMCTSController: {fileID: 6567344654928573946}
+  myTeam: {fileID: 0}
+  enemyTeam: {fileID: 0}
+  nodeActionsGenerator: {fileID: 7679982556731528188}
+--- !u!114 &7679982556731528188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7394691245662212703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60e3a18471fc77443add68a88c58e225, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeActionsToGenerate: 10
+  clonedObjectsContainer: {fileID: 0}
